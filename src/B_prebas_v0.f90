@@ -1024,8 +1024,8 @@ outt(:,:,1)=STAND_all
  modOut((year+1),9:nVar,:,:) = outt(9:nVar,:,:)
 
  domSp = maxloc(STAND_all(13,:))
- layDomSp = int(domSp(1))
- species = int(stand_all(4,layDomSp))
+ layer = int(domSp(1))
+ species = int(stand_all(4,layer))
  call underst(fAPARsite,siteType,parsUND,pBiomUnd(:,species),understory(year,:,1), understory(year,:,2))
  if(year < nYears) then
   understory(year+1,:,1) = understory(year,:,1)
