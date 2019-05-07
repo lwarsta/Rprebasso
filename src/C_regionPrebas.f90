@@ -114,7 +114,6 @@ do ij = 1,maxYears
 		litterSize,soilCtot(i,ij),&
 		defaultThinX,ClCutX,inDclct(i,:),inAclct(i,:),dailyPRELES(i,(((ij-1)*365)+1):(ij*365),:),yassoRun(i), & 
 				parsUND,pBiomUnd,understory(i,:,:,:))
-)
 	elseif(prebasVersion(i)==1.) then
 	  call prebas_v1(1,nLayers(i),allSP,siteInfo(i,:),pCrobas,initVar(i,:,1:nLayers(i)),&
 		thinningX(1:az,:),output(1,:,1:nLayers(i),:),az,maxYearSite,fAPAR(i,ij),initClearcut(i,:),&
