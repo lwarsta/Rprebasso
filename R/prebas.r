@@ -2,6 +2,8 @@
 prebas <- function(nYears,
                    pCROBAS = pCROB,
                    pPRELES = pPREL,
+                   parsUND = parsUND,
+                   pBiomUnd = pBiomUnd,
                    PREBASversion = 0,
                    etmodel = 0,
                    pYASSO = pYAS,
@@ -25,7 +27,8 @@ prebas <- function(nYears,
                    yassoRun = 0,
                    smoothP0 = 1,
                    smoothETS = 1,
-                   smoothYear=5){
+                   smoothYear=5,
+                   understory = NA){
 
   ###process weather###
   if(length(PAR) >= (nYears*365)){
@@ -139,6 +142,9 @@ prebas <- function(nYears,
     weatherYasso[,2] = aPrecip(Precip,nYears)
   }
 
+  if(all(is.na(understory))){
+    understory = array(0., dim=c(nYears,3,2))
+  }
   PREBASversion <- paste("prebas_v",PREBASversion,sep='')
 
   prebas <- .Fortran(PREBASversion,
@@ -173,7 +179,10 @@ prebas <- function(nYears,
                      inDclct=as.double(inDclct),
                      inAclct=as.double(inAclct),
                      dailyPRELES = matrix(-999,(nYears*365),3),
-                     yassoRun=as.double(yassoRun))
+                     yassoRun=as.double(yassoRun),
+                     parsUND = as.matrix(parsUND),
+                     pBiomUnd = as.matrix(pBiomUnd),
+                     understory = as.array(understory))
   class(prebas) <- "prebas"
   return(prebas)
 }

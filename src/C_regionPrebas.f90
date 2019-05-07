@@ -7,7 +7,8 @@ subroutine regionPrebas(siteOrder,HarvLim,minDharv,multiOut,nSites,areas,nClimID
 		nThinning,fAPAR,initClearcut,fixBAinitClarcut,initCLcutRatio,ETSy,P0y, initVar,&
 		weatherPRELES,DOY,pPRELES,etmodel, soilCinOut,pYasso,&
 		pAWEN,weatherYasso,litterSize,soilCtotInOut, &
-		defaultThin,ClCut,inDclct,inAclct,dailyPRELES,yassoRun,prebasVersion)
+		defaultThin,ClCut,inDclct,inAclct,dailyPRELES,yassoRun,prebasVersion, &
+		parsUND,pBiomUnd,understory)
 
 implicit none
 
@@ -27,6 +28,7 @@ real (kind=8), intent(in) :: weatherPRELES(nClimID,maxYears,365,5),HarvLim(maxYe
  real (kind=8), intent(in) :: inDclct(nSites,allSP),inAclct(nSites,allSP)
 ! integer, intent(in) :: siteThinning(nSites)
  integer, intent(inout) :: nThinning(nSites)
+ integer, intent(inout) :: parsUND(6,5),pBiomUnd(4,allSP),understory(nSites,maxYears,3,2)
  real (kind=8), intent(out) :: fAPAR(nSites,maxYears)
  real (kind=8), intent(inout) :: initVar(nSites,6,maxNlayers),P0y(nClimID,maxYears,2),ETSy(nClimID,maxYears)!,par_common
  real (kind=8), intent(inout) :: multiOut(nSites,maxYears,nVar,maxNlayers,2)
@@ -110,7 +112,9 @@ do ij = 1,maxYears
 		weatherPRELES(climID,ij,:,:),DOY,pPRELES,etmodel, &
 		soilC(i,ij,:,:,1:nLayers(i)),pYasso,pAWEN,weatherYasso(climID,ij,:),&
 		litterSize,soilCtot(i,ij),&
-		defaultThinX,ClCutX,inDclct(i,:),inAclct(i,:),dailyPRELES(i,(((ij-1)*365)+1):(ij*365),:),yassoRun(i))
+		defaultThinX,ClCutX,inDclct(i,:),inAclct(i,:),dailyPRELES(i,(((ij-1)*365)+1):(ij*365),:),yassoRun(i), & 
+				parsUND,pBiomUnd,understory(i,:,:,:))
+)
 	elseif(prebasVersion(i)==1.) then
 	  call prebas_v1(1,nLayers(i),allSP,siteInfo(i,:),pCrobas,initVar(i,:,1:nLayers(i)),&
 		thinningX(1:az,:),output(1,:,1:nLayers(i),:),az,maxYearSite,fAPAR(i,ij),initClearcut(i,:),&
@@ -118,7 +122,8 @@ do ij = 1,maxYears
 		weatherPRELES(climID,ij,:,:),DOY,pPRELES,etmodel, &
 		soilC(i,ij,:,:,1:nLayers(i)),pYasso,pAWEN,weatherYasso(climID,ij,:),&
 		litterSize,soilCtot(i,ij),&
-		defaultThinX,ClCutX,inDclct(i,:),inAclct(i,:),dailyPRELES(i,(((ij-1)*365)+1):(ij*365),:),yassoRun(i))
+		defaultThinX,ClCutX,inDclct(i,:),inAclct(i,:),dailyPRELES(i,(((ij-1)*365)+1):(ij*365),:),yassoRun(i), & 
+				parsUND,pBiomUnd,understory(i,:,:,:))
 	endif
 	
 	! if clearcut occur initialize initVar and age

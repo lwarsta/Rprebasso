@@ -5,7 +5,8 @@
 subroutine prebas_v0(nYears,nLayers,nSp,siteInfo,pCrobas,initVar,thinning,output,nThinning,maxYearSite,fAPAR,initClearcut,&
 		fixBAinitClarcut,initCLcutRatio,ETSy,P0y,weatherPRELES,DOY,pPRELES,etmodel, soilCinOut,pYasso,pAWEN,weatherYasso,&
 		litterSize,soilCtotInOut,&
-		defaultThin,ClCut,inDclct,inAclct,dailyPRELES,yassoRun)
+		defaultThin,ClCut,inDclct,inAclct,dailyPRELES,yassoRun, &
+		parsUND,pBiomUnd,understory)
 
 implicit none
 
@@ -16,10 +17,10 @@ implicit none
  integer, intent(in) :: nYears,nLayers,nSp
  real (kind=8), intent(in) :: weatherPRELES(nYears,365,5)
  integer, intent(in) :: DOY(365),etmodel
- real (kind=8), intent(inout) :: pPRELES(30)
+ real (kind=8), intent(inout) :: pPRELES(30), understory(nYears,3,2)
  real (kind=8), intent(inout) :: thinning(nThinning,8)
  real (kind=8), intent(inout) :: initClearcut(5)	!initial stand conditions after clear cut. (H,D,totBA,Hc,Ainit)
- real (kind=8), intent(in) :: pCrobas(npar,nSp),pAWEN(12,nSp)
+ real (kind=8), intent(in) :: pCrobas(npar,nSp),pAWEN(12,nSp),parsUND(6,5),pBiomUnd(4,nSp)
  integer, intent(in) :: maxYearSite
  real (kind=8), intent(in) :: defaultThin,ClCut,yassoRun,fixBAinitClarcut
  real (kind=8), intent(in) :: inDclct(nSp),inAclct(nSp)
@@ -81,6 +82,8 @@ implicit none
  real (kind=8) :: qcTOT0,Atot,fAPARprel(365)
 !v1 version definitions
  real (kind=8) :: theta
+ !!understory
+ real (kind=8) :: covUnd(3), biomUnd(3)
 
 !###initialize model###!
 fbAWENH = 0.
@@ -1017,9 +1020,17 @@ endif !default thin
 
 outt(:,:,1)=STAND_all
 
-modOut((year+1),7,:,:) = outt(7,:,:)
-modOut((year+1),9:nVar,:,:) = outt(9:nVar,:,:)
+ modOut((year+1),7,:,:) = outt(7,:,:)
+ modOut((year+1),9:nVar,:,:) = outt(9:nVar,:,:)
 
+ domSp = maxloc(STAND_all(13,:))
+ layDomSp = int(domSp(1))
+ species = int(stand_all(4,layDomSp))
+ call underst(fAPARsite,siteType,parsUND,pBiomUnd(:,species),understory(year,:,1), understory(year,:,2))
+ if(year < nYears) then
+  understory(year+1,:,1) = understory(year,:,1)
+  !understory(year+1,:,2) = understory(year,:,2)
+ endif
 !!!!run Yasso
  ! write(2,*) "before yasso"
 

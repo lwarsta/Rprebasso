@@ -723,6 +723,44 @@ IMPLICIT NONE
 	! AWENH(5) = 0.
     END SUBROUTINE compAWENH
 
+	!!!!!understory subroutine
+    SUBROUTINE underst(fAPARtrees,siteType,parsUND,pBiomUnd,covUnd, biomUnd)
+        IMPLICIT NONE
+        REAL (kind=8),DIMENSION(3),INTENT(INOUT) :: covUnd, biomUnd !!!1:3 = grasses&herbs, shrubs, lichens&mosses
+        REAL (kind=8),INTENT(IN) :: fAPARtrees,siteType,parsUND(6,5) !!6=number of parameters ,5=siteTypes
+		REAL (kind=8),INTENT(IN) :: pBiomUnd(4)
+		real (kind=8) :: b12,b21,b13,b31,a,c, xa
+		real (kind=8) :: B0bottom, B1bottom, B1HG, B1SH
+		
+		!assign parameters %cover
+		b12 = parsUND(1,int(siteType))
+		b21 = parsUND(2,int(siteType))
+		b13 = parsUND(3,int(siteType))
+		b31 = parsUND(4,int(siteType))
+		a = parsUND(5,int(siteType))
+		c = parsUND(6,int(siteType))
+		
+		! %cover calculations
+		xa = 1 - (covUnd(1) + covUnd(2))
+		covUnd(1) = covUnd(1) + b12 * (a-fAPARtrees) * xa - b21 * covUnd(1)
+		covUnd(2) = b13 * fAPARtrees * xa - b31 * covUnd(2)
+		covUnd(3) = xa - c
+	
+	!!biomass calculations
+		B0bottom = pBiomUnd(1)
+		B1bottom = pBiomUnd(2)
+		B1HG = pBiomUnd(3)
+		B1SH = pBiomUnd(4)
+		
+		biomUnd(3) = covUnd(3)**2 / (B0bottom + B1bottom * covUnd(3))**2   !!biomass of bottom layer
+	    biomUnd(2) = B1SH * covUnd(2) !!biomass of shrubs
+		biomUnd(1) = B1HG * covUnd(1) !!biomass of grasses&herbs
+	  
+	  
+	  
+    END SUBROUTINE underst
+	
+	
 !! Note for Birch Betula pubenscens and brown leaves is used
 !    SUBROUTINE foliageAWENH(Lf,folAWENH)
 !        IMPLICIT NONE

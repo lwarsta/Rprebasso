@@ -1,6 +1,8 @@
 InitMultiSite <- function(nYearsMS,
                           pCROBAS = pCROB,
                           pPRELES = pPREL,
+                          parsUND = parsUND,
+                          pBiomUnd = pBiomUnd,
                           PREBASversion = 0,
                           etmodel = 0,
                           pYASSO =pYAS,
@@ -31,7 +33,8 @@ InitMultiSite <- function(nYearsMS,
                           lukeRuns,
                           smoothP0 = 1,
                           smoothETS = 1,
-                          smoothYear=5){
+                          smoothYear=5,
+                          understory = NA){
 
   nSites <- length(nYearsMS)
   if(all(is.na(areas))) areas <- rep(1.,nSites) ###each site is 1 ha (used to scale regional harvest)
@@ -189,6 +192,11 @@ InitMultiSite <- function(nYearsMS,
     litterSize[1,] <- c(30,30,10)
     # siteInfo <- siteInfo[,-c(4,5)]
   }
+  
+  if(all(is.na(understory))){
+    understory = array(0., dim=c(nSites,maxYears,3,2))
+  }
+  
 
   multiSiteInit <- list(
     multiOut = multiOut,
@@ -231,7 +239,10 @@ InitMultiSite <- function(nYearsMS,
     lukeRuns = lukeRuns,
     PREBASversion = PREBASversion,
     smoothP0 = smoothP0,
-    smoothETS = smoothETS)
+    smoothETS = smoothETS,
+    understory = understory,
+    parsUND = parsUND,
+    pBiomUnd = pBiomUnd)
   return(multiSiteInit)
 }
 
@@ -274,7 +285,10 @@ multiPrebas <- function(multiSiteInit){
                      dailyPRELES = as.array(multiSiteInit$dailyPRELES),
                      yassoRun=as.double(multiSiteInit$yassoRun),
                      PREBASversion=as.double(multiSiteInit$PREBASversion),
-                     lukeRuns=as.double(multiSiteInit$lukeRuns))
+                     lukeRuns=as.double(multiSiteInit$lukeRuns),
+                     understory = as.array(multiSiteInit$understory),
+                     parsUND = as.matrix(multiSiteInit$parsUND),
+                     pBiomUnd = as.matrix(multiSiteInit$pBiomUnd))
   class(prebas) <- "multiPrebas"
   return(prebas)
 }
@@ -332,7 +346,10 @@ regionPrebas <- function(multiSiteInit,
                    dailyPRELES = as.array(multiSiteInit$dailyPRELES),
                    yassoRun=as.double(multiSiteInit$yassoRun),
                    PREBASversion=as.double(multiSiteInit$PREBASversion),
-                   lukeRuns=as.double(multiSiteInit$lukeRuns))
+                   lukeRuns=as.double(multiSiteInit$lukeRuns),
+                   understory = as.array(multiSiteInit$understory),
+                   parsUND = as.matrix(multiSiteInit$parsUND),
+                   pBiomUnd = as.matrix(multiSiteInit$pBiomUnd))
 class(prebas) <- "regionPrebas"
 if(prebas$maxNlayers>1){
     rescalVbyArea <- prebas$multiOut[,,37,,1] * prebas$areas
