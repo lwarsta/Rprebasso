@@ -152,14 +152,14 @@ InitMultiSite <- function(nYearsMS,
 
   ##extract weather inputs
   for(i in 1:nClimID){
-    nYearsX <- max(nYearsMS[which(climIDs==i)])
+     <- max(nYearsMS[which(climIDs==i)])
     weatherPreles <- array(c(PAR[i,1:(365*nYearsX)],TAir[i,1:(365*nYearsX)],
                              VPD[i,1:(365*nYearsX)],Precip[i,1:(365*nYearsX)],
                              CO2[i,1:(365*nYearsX)]),dim=c(365,nYearsX,5))
 
     weatherPreles <- aperm(weatherPreles, c(2,1,3))
 
-    multiweather[i,(1:nYearsMS[i]),,] <- weatherPreles
+    multiweather[i,(1:nYearsX),,] <- weatherPreles
   }
 
   ### compute P0
